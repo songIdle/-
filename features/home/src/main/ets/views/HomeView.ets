@@ -1,3 +1,4 @@
+import { BreakpointConstants, BreakPointType } from 'basic'
 import { DiscountGoodsComp, DiscountType } from '../components/DiscountGoodsComp'
 import { MkGoods } from '../components/MkGoods'
 import { Banner, CategoryItem, MkGoodsItem, Params } from '../viewmodel'
@@ -5,6 +6,7 @@ import { Banner, CategoryItem, MkGoodsItem, Params } from '../viewmodel'
 
 @Component
 export struct HomeView {
+  @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
   // 轮播图
   @State banners: Banner[] = []
   // 分类
@@ -129,15 +131,17 @@ export struct HomeView {
             })
           }
           .indicator(
+            this.breakPoint==BreakpointConstants.SM?
             DotIndicator.dot()
               .itemWidth(8)
               .itemHeight(4)
               .color('#33191919')
               .selectedItemWidth(24)
               .selectedItemHeight(4)
-              .selectedColor('#191919')
+              .selectedColor('#191919'):false
           )
-
+          .itemSpace(new BreakPointType({'sm':0,'md':10,'lg':20}).getValue(this.breakPoint))
+          .displayCount(new BreakPointType({'sm':1,'md':2,'lg':3}).getValue(this.breakPoint))
           Row() {
             Row({ space: 4 }) {
               Image($r('[basic].media.ic_public_search'))
@@ -195,7 +199,7 @@ export struct HomeView {
           .alignListItem(ListItemAlign.Center)
 
           // 特惠推荐
-          Column({ space: 10 }) {
+          Column({ space: new BreakPointType({'sm':14,'md':36,'lg':72}).getValue(this.breakPoint) }) {
             Image($r('app.media.home_cmd_title'))
               .width(150)
               .height(20)
@@ -232,7 +236,7 @@ export struct HomeView {
           .alignItems(HorizontalAlign.Start)
 
           // 爆款推荐+一站买全
-          Row({ space: 10 }) {
+          Row({ space: new BreakPointType({'sm':14,'md':36,'lg':72}).getValue(this.breakPoint) }) {
             this.DiscountBuilder({
               title: '爆款推荐',
               subTitle: '最受欢迎',
@@ -248,7 +252,7 @@ export struct HomeView {
           }
 
           // 新鲜好物
-          Column({ space: 10 }) {
+          Column({ space: new BreakPointType({'sm':14,'md':36,'lg':72}).getValue(this.breakPoint) }) {
             Image($r('app.media.home_new'))
               .width(146)
               .height(19)
@@ -279,7 +283,7 @@ export struct HomeView {
               }
             })
           }
-          .columnsTemplate('1fr 1fr')
+          .columnsTemplate(new BreakPointType({'sm':'1fr 1fr','md':'1fr 1fr 1fr','lg':'1fr 1fr 1fr'}).getValue(this.breakPoint))
           .columnsGap(8)
           .rowsGap(10)
 
