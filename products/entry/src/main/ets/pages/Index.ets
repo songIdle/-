@@ -1,3 +1,9 @@
+import { BreakPointType, Logger } from 'basic';
+import { CartView } from 'cart';
+import { CategoryView } from 'category';
+import { HomeView } from 'home';
+import { MyView } from 'my';
+
 interface TabItem {
   text: string
   normal: ResourceStr
@@ -7,6 +13,8 @@ interface TabItem {
 @Entry
 @Component
 struct Index {
+  @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
+
   @State activeIndex: number = 0
   list: TabItem[] = [
     { text: '首页', normal: $r('app.media.ic_public_home_normal'), active: $r('app.media.ic_public_home_active') },
@@ -14,16 +22,29 @@ struct Index {
     { text: '购物袋', normal: $r('app.media.ic_public_cart_normal'), active: $r('app.media.ic_public_cart_active') },
     { text: '我的', normal: $r('app.media.ic_public_my_normal'), active: $r('app.media.ic_public_my_active') },
   ]
+  aboutToAppear(): void {
+    Logger.info('1111','===std')
+  }
 
   build() {
     Tabs({ barPosition: BarPosition.End }) {
       ForEach(this.list, (item: TabItem, index: number) => {
         TabContent() {
-
+          if (index === 0) {
+            HomeView()
+          } else if (index === 1) {
+            CategoryView()
+          } else if (index === 2) {
+            CartView()
+          } else if (index === 3) {
+            MyView()
+          }
         }
         .tabBar(this.TabItemBuilder(item, index))
       })
     }
+    .barPosition(this.breakPoint == 'lg' ? BarPosition.Start : BarPosition.End)
+    .vertical(this.breakPoint == 'lg' ? true : false)
     .scrollable(false)
     .onTabBarClick(index => {
       this.activeIndex = index
