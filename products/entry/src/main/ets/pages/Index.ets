@@ -1,4 +1,4 @@
-import { BreakPointType, Logger } from 'basic';
+import { BreakpointConstants, Logger } from 'basic';
 import { CartView } from 'cart';
 import { CategoryView } from 'category';
 import { HomeView } from 'home';
@@ -43,8 +43,8 @@ struct Index {
         .tabBar(this.TabItemBuilder(item, index))
       })
     }
-    .barPosition(this.breakPoint == 'lg' ? BarPosition.Start : BarPosition.End)
-    .vertical(this.breakPoint == 'lg' ? true : false)
+    .barPosition(this.breakPoint ==  BreakpointConstants.LG? BarPosition.Start : BarPosition.End)
+    .vertical(this.breakPoint == BreakpointConstants.LG ? true : false)
     .scrollable(false)
     .onTabBarClick(index => {
       this.activeIndex = index
