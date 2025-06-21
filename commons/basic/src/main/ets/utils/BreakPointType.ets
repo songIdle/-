@@ -6,7 +6,7 @@ export class BreakPointType<T> {
     this.options = option
   }
 
-  getValue<T>(currentBreakPoint: string):T {
+  getValue(currentBreakPoint: string) {
     return this.options[currentBreakPoint]
   }
 }
