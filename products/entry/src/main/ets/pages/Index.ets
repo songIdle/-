@@ -14,7 +14,8 @@ interface TabItem {
 @Component
 struct Index {
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
-
+  @StorageProp('safeTop') safeTop: number = 0
+  @StorageProp('safeBottom') safeBottom: number = 0
   @State activeIndex: number = 0
   list: TabItem[] = [
     { text: '首页', normal: $r('app.media.ic_public_home_normal'), active: $r('app.media.ic_public_home_active') },
@@ -23,7 +24,7 @@ struct Index {
     { text: '我的', normal: $r('app.media.ic_public_my_normal'), active: $r('app.media.ic_public_my_active') },
   ]
   aboutToAppear(): void {
-    Logger.info('1111','===std')
+
   }
 
   build() {

@@ -34,3 +34,23 @@ export interface Params {
   bg: ResourceStr,
   list: MkGoodsItem[]
 }
+
+export interface HotResult {
+  id: string;
+  subTypes: SubType[];
+  title: string;
+}
+
+export interface SubType {
+  goodsItems: GoodsItems;
+  id: string;
+  title: string;
+}
+
+export interface GoodsItems {
+  counts: number;
+  items: MkGoodsItem[];
+  page: number;
+  pages: number;
+  pageSize: number;
+}
