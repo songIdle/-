@@ -10,6 +10,7 @@ import { Banner, CategoryItem, HotResult, MkGoodsItem, Params } from '../viewmod
 
 @Component
 export struct HomeView {
+  @StorageProp('safeTop') safeTop: number = 0
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
   // 轮播图
   @State banners: Banner[] = []
@@ -135,6 +136,7 @@ export struct HomeView {
             .borderRadius(20)
             .padding({ left: 12 })
           }
+          .margin({ top: this.safeTop})
           .padding({ left: 16, right: 16 })
         }
         .width('100%')

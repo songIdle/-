@@ -14,7 +14,6 @@ interface TabItem {
 @Component
 struct Index {
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
-  @StorageProp('safeTop') safeTop: number = 0
   @StorageProp('safeBottom') safeBottom: number = 0
   @State activeIndex: number = 0
   list: TabItem[] = [
@@ -50,6 +49,7 @@ struct Index {
     .onTabBarClick(index => {
       this.activeIndex = index
     })
+    .margin({bottom:this.safeBottom})
   }
 
   @Builder
