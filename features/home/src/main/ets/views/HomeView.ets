@@ -1,11 +1,12 @@
 import { it } from '@ohos/hypium'
-import { BreakpointConstants, BreakPointType, RequestAxios } from 'basic'
+import { BreakpointConstants, BreakPointType, GoodsItemsDataSource, RequestAxios } from 'basic'
 import { getBannerApi, getCategoryApi, getHotInVogueApi, getHotOneStopApi, getHotPreferenceApi,
   getNewApi,
   getRecommendApi} from '../api'
 import { DiscountGoodsComp, DiscountType } from '../components/DiscountGoodsComp'
 import { MkGoods } from '../components/MkGoods'
 import { Banner, CategoryItem, HotResult, MkGoodsItem, Params } from '../viewmodel'
+
 
 
 @Component
@@ -25,8 +26,9 @@ export struct HomeView {
   // 新鲜好物
   @State newGoods: MkGoodsItem[] = []
   // 推荐商品
-  @State recommendGoods: MkGoodsItem[] = []
+  @State recommendGoods: GoodsItemsDataSource<MkGoodsItem> =new GoodsItemsDataSource<MkGoodsItem>()
 
+  limit:number=8
   aboutToAppear(): void {
     // mock数据
     this.getData()
@@ -58,7 +60,7 @@ export struct HomeView {
             this.newGoods = item.value.data.result as MkGoodsItem[]
             break
           case 6:
-            this.recommendGoods = item.value.data.result as MkGoodsItem[]
+            this.recommendGoods.reloadData(item.value.data.result as MkGoodsItem[])
             break
         }
       }
@@ -256,7 +258,7 @@ export struct HomeView {
 
           // 推荐商品
           WaterFlow() {
-            ForEach(this.recommendGoods, (item: MkGoodsItem) => {
+            LazyForEach(this.recommendGoods, (item: MkGoodsItem) => {
               FlowItem() {
                 MkGoods({ goods: item })
               }
@@ -265,6 +267,16 @@ export struct HomeView {
           .columnsTemplate(new BreakPointType({'sm':'1fr 1fr','md':'1fr 1fr 1fr','lg':'1fr 1fr 1fr'}).getValue(this.breakPoint))
           .columnsGap(8)
           .rowsGap(10)
+          .onReachEnd(async () => {
+            this.limit+=8
+            const res=await getRecommendApi(this.limit)
+            this.recommendGoods.reloadData(res.data.result as MkGoodsItem[])
+          })
+          .height('100%')
+          .nestedScroll({
+            scrollForward:NestedScrollMode.PARENT_FIRST,
+            scrollBackward:NestedScrollMode.SELF_FIRST
+          })
 
         }
         .padding({
@@ -275,6 +287,7 @@ export struct HomeView {
         })
       }
     }
+    .height('100%')
     .scrollBar(BarState.Off)
   }
 }
