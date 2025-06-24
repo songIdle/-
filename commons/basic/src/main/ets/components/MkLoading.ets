@@ -12,7 +12,7 @@ export struct MkLoading {
         { src: $r('app.media.loading_04') }
       ])
       .state(AnimationStatus.Running)
-      .duration(199)
+      .duration(300)
       .iterations(-1)
       .width(this.loadingWidth)
       .aspectRatio(3)

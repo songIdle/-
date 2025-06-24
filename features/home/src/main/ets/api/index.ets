@@ -27,6 +27,6 @@ export const getNewApi = () => {
   return RequestAxios.get<MkGoodsItem[]>('/home/new')
 }
 
-export const getRecommendApi = (limit: number = 8) => {
+export const getRecommendApi = (limit: number = 10) => {
   return RequestAxios.get<MkGoodsItem[]>('/home/recommend', new Object({ limit }))
 }
