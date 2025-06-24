@@ -68,6 +68,8 @@ export struct HomeView {
             this.recommendGoods.reloadData(item.value.data.result as MkGoodsItem[])
             break
         }
+        // 保存分类数据
+        AppStorage.setOrCreate('categoryData', this.categories)
       }
     })
   }
