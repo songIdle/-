@@ -13,6 +13,7 @@ interface TabItem {
 @Entry
 @Component
 struct Index {
+  @Provide pageStack: NavPathStack = new NavPathStack()
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
   @StorageProp('safeBottom') safeBottom: number = 0
   @State activeIndex: number = 0
@@ -27,29 +28,33 @@ struct Index {
   }
 
   build() {
-    Tabs({ barPosition: BarPosition.End }) {
-      ForEach(this.list, (item: TabItem, index: number) => {
-        TabContent() {
-          if (index === 0) {
-            HomeView()
-          } else if (index === 1) {
-            CategoryView()
-          } else if (index === 2) {
-            CartView()
-          } else if (index === 3) {
-            MyView()
+    Navigation(this.pageStack) {
+      Tabs({ barPosition: BarPosition.End }) {
+        ForEach(this.list, (item: TabItem, index: number) => {
+          TabContent() {
+            if (index === 0) {
+              HomeView()
+            } else if (index === 1) {
+              CategoryView()
+            } else if (index === 2) {
+              CartView()
+            } else if (index === 3) {
+              MyView()
+            }
           }
-        }
-        .tabBar(this.TabItemBuilder(item, index))
+          .tabBar(this.TabItemBuilder(item, index))
+        })
+      }
+      .barPosition(this.breakPoint == BreakpointConstants.LG ? BarPosition.Start : BarPosition.End)
+      .vertical(this.breakPoint == BreakpointConstants.LG ? true : false)
+      .scrollable(false)
+      .onTabBarClick(index => {
+        this.activeIndex = index
       })
+      .margin({ bottom: this.safeBottom })
     }
-    .barPosition(this.breakPoint ==  BreakpointConstants.LG? BarPosition.Start : BarPosition.End)
-    .vertical(this.breakPoint == BreakpointConstants.LG ? true : false)
-    .scrollable(false)
-    .onTabBarClick(index => {
-      this.activeIndex = index
-    })
-    .margin({bottom:this.safeBottom})
+    .hideTitleBar(true)
+    .mode(NavigationMode.Stack)
   }
 
   @Builder

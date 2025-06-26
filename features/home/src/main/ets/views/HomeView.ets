@@ -11,6 +11,7 @@ import { Banner, CategoryItem, HotResult, MkGoodsItem, Params } from '../viewmod
 
 @Component
 export struct HomeView {
+  @Consume pageStack: NavPathStack
   @StorageProp('safeTop') safeTop: number = 0
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
   @State isLoading: boolean = false
@@ -152,6 +153,10 @@ export struct HomeView {
               }
               .margin({ top: this.safeTop })
               .padding({ left: 16, right: 16 })
+              .onClick(() => {
+                // 去搜索页
+                this.pageStack.pushPath({ name: 'SearchView' })
+              })
             }
             .width('100%')
 

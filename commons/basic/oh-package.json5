@@ -8,6 +8,9 @@
   "packageType": "InterfaceHar",
   "dependencies": {
     "@abner/log": "^1.0.5",
-    "@ohos/axios": "2.2.6"
-  }
+    "@ohos/axios": "2.2.6",
+    "@ohos/pulltorefresh": "^2.1.2"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
 }

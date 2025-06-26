@@ -1,7 +1,11 @@
-import { CategoryItem, CategoryItemChild, MkNavbar } from 'basic'
+import { BreakpointConstants, BreakPointType, CategoryItem, CategoryItemChild, MkNavbar } from 'basic'
 
 @Component
 export struct CategoryView {
+  @Consume pageStack: NavPathStack
+  @StorageProp(BreakpointConstants.BREAK_POINT_KEY) currentBreakpoint: string = BreakpointConstants.SM
+  // 滚动控制器
+  scroller: Scroller = new Scroller()
   //  Mock分类数据
   @StorageProp('categoryData')
   categories: CategoryItem[] = new Array(10).fill({
@@ -29,7 +33,7 @@ export struct CategoryView {
         showRightIcon: true, // 显示右侧按钮
         rightIcon: $r('[basic].media.ic_public_search'), // 右侧图标为搜索
         rightClickHandler: () => { // 点击右侧图标回调
-          AlertDialog.show({ message: '点击了右侧搜索按钮' })
+          this.pageStack.pushPathByName('SearchView', null)
         },
         customBuilder: this.NavBuilder
       })
@@ -46,6 +50,8 @@ export struct CategoryView {
               .height(56)
               .onClick(() => {
                 this.activeIndex = i
+                // 切换菜单时，滚动到顶部
+                this.scroller.scrollTo({ yOffset: 0, xOffset: 0, animation: true })
               })
 
           })
@@ -53,17 +59,30 @@ export struct CategoryView {
         .width(88)
         .border({ width: { right: 0.5 }, color: $r('[basic].color.under') })
 
-        Scroll() {
+        Scroll(this.scroller) {
           Column() {
             // 顶部图片
             Image(this.categories[this.activeIndex]?.picture)
               .width('100%')
-              .height(136)
+              .height(
+                new BreakPointType({
+                  'sm': 136,
+                  'md': 200,
+                  'lg': 220,
+                }).getValue(this.currentBreakpoint)
+              )
               .objectFit(ImageFit.Contain)
               .backgroundColor('#f6f6f6')
               .borderRadius(8)
               .margin({ bottom: 8 })
-            GridRow({ columns: 2, gutter: 8 }) {
+            GridRow({
+              columns: {
+                sm: 2,
+                md: 3,
+                lg: 4,
+              },
+              gutter: 8
+            }){
               // 子分类
               ForEach(this.categories[this.activeIndex]?.children, (sub: CategoryItemChild) => {
                 GridCol() {
