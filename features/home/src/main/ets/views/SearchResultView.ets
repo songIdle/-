@@ -1,7 +1,8 @@
-import { MkGoodsItem } from 'basic'
+import { MkGoodsItem, MKPullToRefresh } from 'basic'
 import { searchGoodsApi } from '../api'
 import { MkGoods } from '../components/MkGoods'
 import { GoodsItems } from '../viewmodel'
+import { promptAction } from '@kit.ArkUI'
 
 // 联合类型
 export type SortField = 'publishTime' | 'orderNum' | 'price'
@@ -75,6 +76,8 @@ export struct SearchResultView {
   ]
   // 控制器
   scroller = new Scroller()
+  // 保存总页数，用于分页判断
+  totalPage: number = 0
 
   aboutToAppear(): void {
     this.params.keyword = this.pageStack.getParamByName('SearchResultView')[0] as string
@@ -89,8 +92,23 @@ export struct SearchResultView {
     const res = await searchGoodsApi(this.params)
     // Logger.info(res.data.result.pageData.items)
     this.data = res.data.result.pageData.items
+    // 保存总页数，用于分页判断
+    this.totalPage = res.data.result.pageData.pages
   }
-
+  // 加载更多数据
+  async loadMore() {
+    // 如果当前页码小于总页数
+    if (this.params.page < this.totalPage) {
+      // 页码增加
+      this.params.page++
+      // 发送请求
+      const res = await searchGoodsApi(this.params)
+      // 追加数据
+      this.data.push(...res.data.result.pageData.items as MkGoodsItem[])
+    } else {
+      promptAction.showToast({ message: '没有更多数据啦～' })
+    }
+  }
 
   build() {
     Column() {
@@ -152,18 +170,42 @@ export struct SearchResultView {
       .justifyContent(FlexAlign.SpaceBetween)
       .border({ width: { bottom: 0.5 }, color: $r('[basic].color.border') })
 
-      WaterFlow({ scroller: this.scroller }) {
-        ForEach(this.data, (item: MkGoodsItem) => {
-          FlowItem() {
-            MkGoods({ goods: item, smallImage: true })
-          }
-        })
-      }
-      .columnsTemplate("1fr 1fr")
-      .columnsGap(0.5)
-      .rowsGap(0.5)
-      .layoutWeight(1)
+      MKPullToRefresh({
+        data: $data,
+        scroller: this.scroller,
+        customList: () => {
+          this.getWaterFlowView()
+        },
+        // 可选项，下拉刷新回调
+        onRefresh: async () => {
+          this.data = []
+          this.params.page = 1
+          await this.queryData()
+          return '刷新成功'
+        },
+        // 上拉加载更多回调
+        onLoadMore: async () => {
+          this.loadMore()
+          return '上拉加载'
+        }
+      })
+        .layoutWeight(1) // 占满主轴剩余空间
     }
+  }
+  // 通过重构把 WaterFlow 变成 @Builder
+  @Builder
+  getWaterFlowView() {
+    WaterFlow({ scroller: this.scroller }) {
+      ForEach(this.data, (item: MkGoodsItem) => {
+        FlowItem() {
+          MkGoods({ goods: item, smallImage: true })
+        }
+      })
+    }
+    .columnsTemplate("1fr 1fr")
+    .columnsGap(0.5)
+    .rowsGap(0.5)
+    .layoutWeight(1) // 占满主轴剩余空间
   }
 }
 
