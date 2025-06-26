@@ -1,4 +1,4 @@
-import { MkGoodsItem, MKPullToRefresh } from 'basic'
+import { GoodsItemsDataSource, MkGoodsItem, MKPullToRefresh } from 'basic'
 import { searchGoodsApi } from '../api'
 import { MkGoods } from '../components/MkGoods'
 import { GoodsItems } from '../viewmodel'
@@ -50,13 +50,7 @@ export struct SearchResultView {
   // 顶部安全区域
   @StorageProp('safeTop') safeTop: number = 0
   // mock 数据
-  @State data: MkGoodsItem[] = new Array(8).fill({
-    "id": "4033959",
-    "name": "3秒快速拆琴轻松保养odin奥丁12半音阶口琴",
-    "price": 329,
-    "picture": "https://yanxuan-item.nosdn.127.net/937a8e46a9284e8f7e00e13911ecfbe7.png",
-    "payCount": 0
-  })
+  @State data: GoodsItemsDataSource<MkGoodsItem> = new GoodsItemsDataSource<MkGoodsItem>()
   // 查询参数
   @State
   @Watch('paramsChange')
@@ -89,9 +83,13 @@ export struct SearchResultView {
   }
 
   async queryData() {
+    // 清空原数组
+    this.data.reloadData([])
+    // 重置页码
+    this.params.page = 1
     const res = await searchGoodsApi(this.params)
     // Logger.info(res.data.result.pageData.items)
-    this.data = res.data.result.pageData.items
+    this.data.pushDatas(res.data.result.pageData.items)
     // 保存总页数，用于分页判断
     this.totalPage = res.data.result.pageData.pages
   }
@@ -104,7 +102,7 @@ export struct SearchResultView {
       // 发送请求
       const res = await searchGoodsApi(this.params)
       // 追加数据
-      this.data.push(...res.data.result.pageData.items as MkGoodsItem[])
+      this.data.pushDatas(res.data.result.pageData.items)
     } else {
       promptAction.showToast({ message: '没有更多数据啦～' })
     }
@@ -178,8 +176,6 @@ export struct SearchResultView {
         },
         // 可选项，下拉刷新回调
         onRefresh: async () => {
-          this.data = []
-          this.params.page = 1
           await this.queryData()
           return '刷新成功'
         },
@@ -196,7 +192,7 @@ export struct SearchResultView {
   @Builder
   getWaterFlowView() {
     WaterFlow({ scroller: this.scroller }) {
-      ForEach(this.data, (item: MkGoodsItem) => {
+      LazyForEach(this.data, (item: MkGoodsItem) => {
         FlowItem() {
           MkGoods({ goods: item, smallImage: true })
         }

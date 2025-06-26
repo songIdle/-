@@ -84,6 +84,10 @@ export class GoodsItemsDataSource<T> extends BasicDataSource<T> {
     this.dataArray.push(data);
     this.notifyDataAdd(this.dataArray.length - 1);
   }
+  public pushDatas(data: T[]): void {
+    this.dataArray.push(...data);
+    this.notifyDataAdd(this.dataArray.length - 1);
+  }
 
   // 数据直接重新赋值
   public reloadData(data: T[]) {
