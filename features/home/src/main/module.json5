@@ -11,6 +11,11 @@
     ],
     "deliveryWithInstall": true,
     "pages": "$profile:main_pages",
-    "routerMap": "$profile:route_map"
+    "routerMap": "$profile:route_map",
+    "requestPermissions": [{
+      "name": "ohos.permission.MICROPHONE", // 权限名称
+      "reason": "$string:mico_use",  // 申请原因
+      "usedScene": {} // 使用场景
+    }]
   }
 }

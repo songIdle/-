@@ -1,4 +1,5 @@
 import { window } from '@kit.ArkUI'
+import { AudioSearchComp } from './AudioSearchComp'
 
 @Builder
 function SearchViewBuilder() {
@@ -64,7 +65,7 @@ export struct SearchView {
         angle: 135,
         colors: [[$r('[basic].color.linear_begin'), 0], [$r('[basic].color.linear_end'), 1]]
       })
-
+      AudioSearchComp()
     }
   }
 }

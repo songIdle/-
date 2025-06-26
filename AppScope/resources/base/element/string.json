@@ -3,6 +3,10 @@
     {
       "name": "app_name",
       "value": "陵园购"
+    },
+    {
+      "name": "mico_use",
+      "value": "用于语音搜索"
     }
   ]
 }
