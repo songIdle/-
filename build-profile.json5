@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "C:/Users/13125/Desktop/美蔻商城-证书密钥/美蔻商城.p12",
+          "storePassword": "00000019A5AE031B4757BA2B6E10C1977A3B3C93AE3D6DD24822E7A5572C407CBC79FD854078138C99",
+          "keyAlias": "meikou_pre",
+          "keyPassword": "0000001993F238E07120A3744018784AD9BF4E7EFD6D60C467DA0645E91EE331E9A444DAC54CF0E43F",
+          "signAlg": "SHA256withECDSA",
+          "profile": "C:/Users/13125/Desktop/美蔻商城-证书密钥/AGC美蔻商城-已申请华为登录-华为地图Debug.p7b",
+          "certpath": "C:/Users/13125/Desktop/美蔻商城-证书密钥/AGC_美蔻商城.cer"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

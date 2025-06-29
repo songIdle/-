@@ -16,6 +16,12 @@
     "requestPermissions": [
       {"name": "ohos.permission.INTERNET"}
     ],
+    "metadata": [ // 配置信息如下
+      {
+        "name": "client_id",
+        "value": "111423245" // 工作是用公司的
+      }
+    ],
     "abilities": [
       {
         "name": "EntryAbility",
