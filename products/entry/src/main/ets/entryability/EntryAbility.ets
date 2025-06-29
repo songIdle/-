@@ -1,7 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { BreakpointConstants } from 'basic';
+import { auth, BreakpointConstants } from 'basic';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
@@ -65,10 +65,12 @@ export default class EntryAbility extends UIAbility {
         })
       });
     windowStage.loadContent('pages/Index', (err) => {
+      //这里无论是否成功都会执行该函数，其实就是一个then
       if (err.code) {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
         return;
       }
+      PersistentStorage.persistProp(auth.KEY, { });
     });
   }
 

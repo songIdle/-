@@ -1,5 +1,6 @@
-import { MkNavbar } from 'basic'
+import { auth, MkNavbar } from 'basic'
 import { promptAction } from '@kit.ArkUI'
+import { LoginApi } from '../api'
 
 @Builder
 function LoginViewBuilder() {
@@ -11,8 +12,8 @@ function LoginViewBuilder() {
 
 @Component
 export struct LoginView {
-  @State @Watch('onInput') account: string = ''
-  @State @Watch('onInput') password: string = ''
+  @State @Watch('onInput') account: string = 'songBoss'
+  @State @Watch('onInput') password: string = '123456'
   @State valid: boolean = false
   @State agree: boolean = false
   @Consume pageStack: NavPathStack
@@ -20,11 +21,17 @@ export struct LoginView {
     this.valid = this.account && this.password ? true : false
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (!this.agree) {
       return promptAction.showToast({ message: '请先勾选协议' })
     }
-
+    const res = await LoginApi({
+      account: this.account,
+      password: this.password
+    })
+    auth.saveUser(res.data.result)
+    promptAction.showToast({ message: '你成功了' })
+    this.pageStack.pop()
   }
 
   @Styles
