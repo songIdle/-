@@ -1,4 +1,4 @@
-import { auth, MkNavbar, MkUser } from 'basic'
+import { auth, MkCell, MkCellGroup, MkNavbar, MkUser } from 'basic'
 
 // import { MkCell, MkCellGroup } from 'basic'
 
@@ -45,28 +45,56 @@ export struct SettingsView {
         }
       })
       Column({ space: 8 }) {
-        //   MkCellGroup() {
-        //     MkCell({
-        //       hasBorder: false, customLabel: () => {
-        //         this.ProfileBuilder()
-        //       }
-        //     })
-        //   }
+          MkCellGroup() {
+            MkCell({
+              hasBorder: false, customLabel: () => {
+                this.ProfileBuilder()
+              }
+            })
+          }
 
-        //   MkCellGroup() {
-        //     MkCell({ label: '收货地址管理' })
-        //     MkCell({ label: '账号安全' })
-        //     MkCell({ label: '消息设置' })
-        //     MkCell({ label: '隐私设置' })
-        //     MkCell({ label: '通用设置', hasBorder: false })
-        //   }
+          MkCellGroup() {
+            MkCell({ label: '收货地址管理' })
+            MkCell({ label: '账号安全' })
+            MkCell({ label: '消息设置' })
+            MkCell({ label: '隐私设置' })
+            MkCell({ label: '通用设置', hasBorder: false })
+          }
 
-        //   MkCellGroup() {
-        //     MkCell({ label: '退出登录', hasBorder: false })
-        //       .onClick(() => {
-
-        //       })
-        //   }
+          MkCellGroup() {
+            MkCell({ label: '退出登录', hasBorder: false })
+              .onClick(() => {
+                AlertDialog.show(
+                  {
+                    title: '提示',
+                    message: '确定退出？',
+                    autoCancel: true,
+                    alignment: DialogAlignment.Bottom,
+                    gridCount: 4,
+                    offset: { dx: 0, dy: -20 },
+                    primaryButton: {
+                      value: '取消',
+                      action: () => {
+                        console.info('Callback when the first button is clicked')
+                      }
+                    },
+                    secondaryButton: {
+                      enabled: true,
+                      defaultFocus: true,
+                      style: DialogButtonStyle.HIGHLIGHT,
+                      value: '确定',
+                      action: () => {
+                        auth.removeUser()
+                        this.pageStack.pop()
+                      }
+                    },
+                    cancel: () => {
+                      console.info('Closed callbacks')
+                    }
+                  }
+                )
+              })
+          }
       }
     }
     .width('100%')
