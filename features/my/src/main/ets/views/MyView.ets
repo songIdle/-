@@ -1,7 +1,9 @@
+import { auth, MkUser } from "basic"
+
 @Component
 export struct MyView {
   @StorageProp('safeTop') safeTop: number = 0
-  // @StorageProp(auth.KEY) user: MkUser = {} as MkUser
+  @StorageProp(auth.KEY) user: MkUser = {} as MkUser
   @Consume pageStack: NavPathStack
   build() {
     Column() {
@@ -11,33 +13,39 @@ export struct MyView {
           Column() {
             Row() {
               Blank()
-              Image($r('[basic].media.ic_public_settings'))
-                .width(24)
-                .aspectRatio(1)
+              if (this.user.token) {
+                Image($r('[basic].media.ic_public_settings'))
+                  .width(24)
+                  .aspectRatio(1)
+                  .onClick(() => {
+                    this.pageStack.pushPath({ name: 'SettingsView' })
+                  })
+              }
 
             }
             .width('100%')
             .height(50)
 
             Row({ space: 16 }) {
-              // 头像
-              Image($r('app.media.ic_user_avatar'))
+              // 头像 短路运算
+              Image(this.user.avatar || $r('app.media.ic_user_avatar'))
                 .width(40)
                 .aspectRatio(1)
                 .borderRadius(20)
-              // if (this.user.token) {
-              //   Text(this.user.nickname || this.user.account)
-              //     .fontColor($r('[basic].color.black'))
-              //     .fontWeight(500)
-              // } else {
-              Text('立即登录')
-                .fontColor($r('[basic].color.black'))
-                .fontWeight(500)
-                .onClick(() => {
-                  this.pageStack.pushPath({ name: 'LoginView' })
-                })
+              // 渲染用户信息
+              if (this.user.token) {
+                Text(this.user.nickname || this.user.account)
+                  .fontColor($r('[basic].color.black'))
+                  .fontWeight(500)
+              } else {
+                Text('立即登录')
+                  .fontColor($r('[basic].color.black'))
+                  .fontWeight(500)
+                  .onClick(() => {
+                    this.pageStack.pushPathByName('LoginView', null)
+                  })
+              }
             }
-            // }
             .width('100%')
             .height(72)
 

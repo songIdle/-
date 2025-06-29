@@ -25,13 +25,19 @@ export struct LoginView {
     if (!this.agree) {
       return promptAction.showToast({ message: '请先勾选协议' })
     }
-    const res = await LoginApi({
-      account: this.account,
-      password: this.password
-    })
-    auth.saveUser(res.data.result)
-    promptAction.showToast({ message: '你成功了' })
-    this.pageStack.pop()
+    try {
+      const res = await LoginApi({
+        account: this.account,
+        password: this.password
+      })
+      auth.saveUser(res.data.result)
+      promptAction.showToast({ message: '你成功了' })
+      this.pageStack.pop()
+    }catch (e){
+      promptAction.showToast({message:'用户名/密码错误'})
+      this.getUIContext().getFocusController().clearFocus()
+    }
+
   }
 
   @Styles
@@ -67,12 +73,18 @@ export struct LoginView {
           .placeholderColor($r('[basic].color.gray'))
           .placeholderFont({ size: 14 })
           .formStyle()
+          .onEditChange((text) => {
+            this.onInput()
+          })
         TextInput({ placeholder: '请输入密码', text: $$this.password })
           .type(InputType.Password)
           .showPasswordIcon(false)
           .placeholderColor($r('[basic].color.gray'))
           .placeholderFont({ size: 14 })
           .formStyle()
+          .onEditChange((text) => {
+            this.onInput()
+          })
 
         Row({ space: 4 }) {
           Checkbox()

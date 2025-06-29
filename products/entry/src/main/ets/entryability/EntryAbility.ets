@@ -70,7 +70,7 @@ export default class EntryAbility extends UIAbility {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
         return;
       }
-      PersistentStorage.persistProp(auth.KEY, { });
+      auth.initUser()
     });
   }
 
