@@ -1,10 +1,11 @@
 import { it } from '@ohos/hypium'
-import { BreakpointConstants, BreakPointType, GoodsItemsDataSource, MkLoading, RequestAxios, SleepUtils } from 'basic'
+import { BreakpointConstants, BreakPointType, GoodsItemsDataSource,
+  MkGoods,
+  MkLoading, RequestAxios, SleepUtils } from 'basic'
 import { getBannerApi, getCategoryApi, getHotInVogueApi, getHotOneStopApi, getHotPreferenceApi,
   getNewApi,
   getRecommendApi} from '../api'
 import { DiscountGoodsComp, DiscountType } from '../components/DiscountGoodsComp'
-import { MkGoods } from '../components/MkGoods'
 import { Banner, CategoryItem, HotResult, MkGoodsItem, Params } from '../viewmodel'
 
 

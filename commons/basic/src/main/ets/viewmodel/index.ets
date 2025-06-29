@@ -21,3 +21,12 @@ export interface CategoryItemChild {
 }
 
 export *  from  './DataSource'
+
+// 其他略
+export interface GoodsItems {
+  counts: number;
+  items: MkGoodsItem[];
+  page: number;
+  pages: number;
+  pageSize: number;
+}

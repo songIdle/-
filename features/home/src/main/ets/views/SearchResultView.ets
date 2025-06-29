@@ -1,6 +1,6 @@
-import { GoodsItemsDataSource, MkGoodsItem, MKPullToRefresh } from 'basic'
+import { GoodsItemsDataSource, MkGoods, MkGoodsItem, MKPullToRefresh } from 'basic'
 import { searchGoodsApi } from '../api'
-import { MkGoods } from '../components/MkGoods'
+
 import { GoodsItems } from '../viewmodel'
 import { promptAction } from '@kit.ArkUI'
 
