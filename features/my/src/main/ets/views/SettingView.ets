@@ -84,11 +84,9 @@ export struct SettingsView {
                       defaultFocus: true,
                       style: DialogButtonStyle.HIGHLIGHT,
                       value: '确定',
-                      action: async () => {
-                        await huaweiAuthPlugin.cancelAuth()
+                      action:  () => {
                         auth.removeUser()
                         this.pageStack.pop()
-                        promptAction.showToast({ message: '取消授权成功' })
                       }
                     },
                     cancel: () => {
@@ -98,6 +96,43 @@ export struct SettingsView {
                 )
               })
           }
+
+        MkCellGroup() {
+          MkCell({ label: '取消授权', hasBorder: false })
+            .onClick(() => {
+              AlertDialog.show(
+                {
+                  title: '提示',
+                  message: '确定退出？',
+                  autoCancel: true,
+                  alignment: DialogAlignment.Bottom,
+                  gridCount: 4,
+                  offset: { dx: 0, dy: -20 },
+                  primaryButton: {
+                    value: '取消',
+                    action: () => {
+                      console.info('Callback when the first button is clicked')
+                    }
+                  },
+                  secondaryButton: {
+                    enabled: true,
+                    defaultFocus: true,
+                    style: DialogButtonStyle.HIGHLIGHT,
+                    value: '确定',
+                    action: async () => {
+                      await huaweiAuthPlugin.cancelAuth()
+                      auth.removeUser()
+                      this.pageStack.pop()
+                      promptAction.showToast({ message: '取消授权成功' })
+                    }
+                  },
+                  cancel: () => {
+                    console.info('Closed callbacks')
+                  }
+                }
+              )
+            })
+        }
       }
     }
     .width('100%')

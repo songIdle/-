@@ -1,4 +1,4 @@
-import { BreakpointConstants, Logger } from 'basic';
+import { BreakpointConstants, Logger, MKNavPathStack } from 'basic';
 import { CartView } from 'cart';
 import { CategoryView } from 'category';
 import { HomeView } from 'home';
@@ -13,7 +13,7 @@ interface TabItem {
 @Entry
 @Component
 struct Index {
-  @Provide pageStack: NavPathStack = new NavPathStack()
+  @Provide pageStack: NavPathStack = MKNavPathStack
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
   @StorageProp('safeBottom') safeBottom: number = 0
   @State activeIndex: number = 0
