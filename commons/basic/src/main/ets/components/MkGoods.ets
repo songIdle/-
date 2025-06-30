@@ -1,3 +1,4 @@
+import { MKNavPathStack } from '../utils/MKNavPathStack'
 import { MkGoodsItem } from '../viewmodel'
 
 @Component
@@ -50,5 +51,9 @@ export struct MkGoods {
     .backgroundColor($r('app.color.white'))
     .borderRadius(8)
     .clip(true)
+    .onClick(() => {
+      // 传参：传递整个商品信息
+      MKNavPathStack.pushPath({ name: 'GoodsView', param: this.goods })
+    })
   }
 }
