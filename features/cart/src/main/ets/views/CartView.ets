@@ -1,4 +1,6 @@
-import { auth, MkGuess, MkNavbar, MkUser, MKLoadingDialog, CartGoodsModel, CartGoods, MkEmpty } from 'basic'
+import { auth, MkGuess, MkNavbar, MkUser, MKLoadingDialog, CartGoodsModel, CartGoods, MkEmpty,
+  EmitterEvent } from 'basic'
+import { emitter } from '@kit.BasicServicesKit'
 
 @Component
 export struct CartView {
@@ -81,6 +83,7 @@ export struct CartView {
                 buttonText: '去逛逛',
                 onClickButton: () => {
                   // 如何去 tab 的第一个呢？
+                  emitter.emit(EmitterEvent.JUMP_TO_HOME)
                 }
               })
             }

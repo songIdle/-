@@ -11,3 +11,7 @@ export class BreakpointConstants {
   // AppStorage 中的 key
   static readonly BREAK_POINT_KEY: string = 'currentBreakpoint'
 }
+
+export class EmitterEvent{
+  static readonly JUMP_TO_HOME= '999'
+}

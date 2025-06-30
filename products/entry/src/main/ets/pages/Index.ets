@@ -1,8 +1,9 @@
-import { BreakpointConstants, Logger, MKNavPathStack } from 'basic';
+import { BreakpointConstants, EmitterEvent, Logger, MKNavPathStack } from 'basic';
 import { CartView } from 'cart';
 import { CategoryView } from 'category';
 import { HomeView } from 'home';
 import { MyView } from 'my';
+import { emitter } from '@kit.BasicServicesKit';
 
 interface TabItem {
   text: string
@@ -24,12 +25,18 @@ struct Index {
     { text: '我的', normal: $r('app.media.ic_public_my_normal'), active: $r('app.media.ic_public_my_active') },
   ]
   aboutToAppear(): void {
-
+    emitter.on(EmitterEvent.JUMP_TO_HOME, () => {
+      this.activeIndex = 0
+    })
+  }
+  aboutToDisappear(): void {
+    // 移除监听
+    emitter.off(EmitterEvent.JUMP_TO_HOME)
   }
 
   build() {
     Navigation(this.pageStack) {
-      Tabs({ barPosition: BarPosition.End }) {
+      Tabs({ barPosition: BarPosition.End ,index:this.activeIndex}) {
         ForEach(this.list, (item: TabItem, index: number) => {
           TabContent() {
             if (index === 0) {
