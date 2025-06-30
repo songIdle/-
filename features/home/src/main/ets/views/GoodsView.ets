@@ -1,7 +1,7 @@
 import { HmSku, Sku } from '@ohmos/sku'
-import { Logger, MkGoodsItem, MkGuess, MKLoadingDialog, MkNavbar } from 'basic'
+import { auth, cart, Logger, MkGoodsItem, MkGuess, MKLoadingDialog, MkNavbar } from 'basic'
 import { Goods } from '../viewmodel'
-import { window } from '@kit.ArkUI'
+import { promptAction, window } from '@kit.ArkUI'
 import { getGoodsApi } from '../api'
 
 
@@ -16,6 +16,7 @@ function GoodsViewBuilder() {
 
 @Component
 export struct GoodsView {
+  @StorageProp(cart.CartKey) cartCount: number = 0
   tabs: string[] = ['商品', '评价', '详情', '推荐']
   @Consume pageStack: NavPathStack
   @StorageProp('safeBottom') safeBottom: number = 0
@@ -52,6 +53,31 @@ export struct GoodsView {
     this.goods = res.data.result
     // 关闭自定义弹窗 loading
     this.dialog.close()
+  }
+
+  async addToCart() {
+    // 1. 判断用户是否登录，未登录需要登录
+    const token = auth.getUser().token
+    if (!token) {
+      promptAction.showToast({ message: '请登录后下单' })
+      this.pageStack.pushPath({ name: 'LoginView' })
+      this.showSheet = false
+      return
+    }
+    // 2. 判断用户是否有选择商品规则(是否完整)
+    if (!this.sku.id) {
+      promptAction.showToast({ message: '请选择要购买的商品规格' })
+      return
+    }
+    // 3. 加入购物车
+    this.loading = true
+    // await 等待请求成功
+    await cart.add({ skuId: this.sku.id, count: this.count })
+    this.loading = false
+    promptAction.showToast({ message: '加入购物袋成功' })
+    // 4. 关闭半模态弹窗
+    this.showSheet = false
+    cart.count()
   }
 
   @Builder
@@ -166,6 +192,7 @@ export struct GoodsView {
         Button(this.loading ? '加入中...' : '加入购物袋')
           .buyButton($r('[basic].color.black'), true)
           .onClick(() => {
+            this.addToCart()
           })
         Button('立即购买')
           .buyButton($r('[basic].color.red'), false)
@@ -227,7 +254,7 @@ export struct GoodsView {
         Image($r('[basic].media.ic_public_comment'))
           .iconButton()
         Badge({
-          count: 10,
+          count: this.cartCount,
           style: {},
           position: { x: 30, y: 4 }
         }) {

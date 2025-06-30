@@ -1,4 +1,4 @@
-import { BreakpointConstants, EmitterEvent, Logger, MKNavPathStack } from 'basic';
+import { BreakpointConstants, cart, EmitterEvent, Logger, MKNavPathStack } from 'basic';
 import { CartView } from 'cart';
 import { CategoryView } from 'category';
 import { HomeView } from 'home';
@@ -14,6 +14,7 @@ interface TabItem {
 @Entry
 @Component
 struct Index {
+  @StorageProp(cart.CartKey) cartCount: number = 0
   @Provide pageStack: NavPathStack = MKNavPathStack
   @StorageProp('currentBreakpoint') breakPoint: string = 'xs'
   @StorageProp('safeBottom') safeBottom: number = 0
@@ -28,6 +29,7 @@ struct Index {
     emitter.on(EmitterEvent.JUMP_TO_HOME, () => {
       this.activeIndex = 0
     })
+    cart.count()
   }
   aboutToDisappear(): void {
     // 移除监听
@@ -66,16 +68,21 @@ struct Index {
 
   @Builder
   TabItemBuilder(item: TabItem, index: number) {
-    Column() {
-      Image(this.activeIndex === index ? item.active : item.normal)
-        .width(24)
-        .aspectRatio(1)
-      Text(item.text)
-      // 跨 HSP 访问资源，需要在 oh-package.json5中导入
-        .fontColor($r('[basic].color.black'))
-        .fontSize(12)
+    Badge({
+      count: index === 2 ? this.cartCount : 0,
+      style: {},
+    }) {
+      Column() {
+        Image(this.activeIndex === index ? item.active : item.normal)
+          .width(24)
+          .aspectRatio(1)
+        Text(item.text)
+        // 跨 HSP 访问资源，需要在 oh-package.json5中导入
+          .fontColor($r('[basic].color.black'))
+          .fontSize(12)
+      }
+      .justifyContent(FlexAlign.SpaceEvenly)
+      .height(50)
     }
-    .justifyContent(FlexAlign.SpaceEvenly)
-    .height(50)
   }
 }
