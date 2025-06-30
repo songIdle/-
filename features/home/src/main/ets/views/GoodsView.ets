@@ -1,7 +1,8 @@
 import { HmSku } from '@ohmos/sku'
-import { MkGoodsItem, MkGuess, MkNavbar } from 'basic'
+import { MkGoodsItem, MkGuess, MKLoadingDialog, MkNavbar } from 'basic'
 import { Goods } from '../viewmodel'
 import { window } from '@kit.ArkUI'
+import { getGoodsApi } from '../api'
 
 
 @Builder
@@ -15,6 +16,8 @@ function GoodsViewBuilder() {
 
 @Component
 export struct GoodsView {
+  tabs: string[] = ['商品', '评价', '详情', '推荐']
+  @Consume pageStack: NavPathStack
   @StorageProp('safeBottom') safeBottom: number = 0
   @State goods: Goods = {} as Goods
   @State activeIndex: number = 0
@@ -23,7 +26,10 @@ export struct GoodsView {
   @State loading: boolean = false
   @State sku: HmSku = {} as HmSku
   scroller = new Scroller()
-
+  dialog = new CustomDialogController({
+    builder: MKLoadingDialog({ message: '拼命加载中' }),
+    customStyle: true,
+  })
   setStatusBar() {
     window.getLastWindow(getContext())
       .then((win) => {
@@ -33,14 +39,41 @@ export struct GoodsView {
 
   async aboutToAppear() {
     // 接收并解析数据
+    this.goods = this.pageStack.getParamByName('GoodsView').pop() as Goods
+    this.getData()
     this.setStatusBar()
+  }
+
+  async getData() {
+    // 开启自定义弹窗 loading
+    this.dialog.open()
+    // 获取详情数据
+    const res = await getGoodsApi(this.goods.id)
+    this.goods = res.data.result
+    // 关闭自定义弹窗 loading
+    this.dialog.close()
   }
 
   @Builder
   CustomTitleBuilder() {
     // 楼层切换
-    Image($r('[basic].media.ic_public_shared'))
-      .iconButton()
+    Row({ space: 10 }) {
+      ForEach(this.tabs, (item: string, index: number) => {
+        Text(item)
+          .fontColor(this.activeIndex === index ? $r('[basic].color.black') : $r('[basic].color.gray'))
+          .onClick(() => {
+            // 设置高亮下标
+            this.activeIndex = index
+            // 设置 List 组件的滚动位置
+            this.scroller.scrollToIndex(index)
+          })
+      })
+      Blank()
+      Image($r('[basic].media.ic_public_shared'))
+        .iconButton()
+    }
+    // .justifyContent(FlexAlign.End)
+    .layoutWeight(1)
   }
 
   @Builder

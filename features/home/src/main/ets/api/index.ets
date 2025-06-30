@@ -1,5 +1,5 @@
 import { CategoryItem, MkGoodsItem, RequestAxios } from "basic"
-import { Banner, HotResult } from "../viewmodel"
+import { Banner, Goods, HotResult } from "../viewmodel"
 import { SearchParams, SearchResult } from "../views/SearchResultView"
 
 export const getBannerApi = () => {
@@ -35,4 +35,8 @@ export const getRecommendApi = (limit: number = 10) => {
 // 其他略
 export const searchGoodsApi = (data: SearchParams) => {
   return RequestAxios.post<SearchResult>('/search/all', data)
+}
+
+export const getGoodsApi = (id: string) => {
+  return RequestAxios.get<Goods>('/goods', new Object({ id: id }))
 }
