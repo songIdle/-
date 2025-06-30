@@ -69,8 +69,8 @@ export class RequestAxios {
     return axiosInstance.post<null, ResponseType<T>>(url, data)
   }
 
-  static delete<T>(url: string, data?: object): Promise<ResponseType<T>> {
-    return axiosInstance.delete<null, ResponseType<T>>(url, data)
+  static delete<T>(url: string, obj?: object): Promise<ResponseType<T>> {
+    return axiosInstance.delete<null, ResponseType<T>, Object>(url, { data: obj })
   }
 
   static put<T>(url: string, data?: object): Promise<ResponseType<T>> {

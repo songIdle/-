@@ -3,6 +3,7 @@ import { auth, MkGuess, MkNavbar, MkUser, MKLoadingDialog, CartGoodsModel, CartG
   cart,
   Logger} from 'basic'
 import { emitter } from '@kit.BasicServicesKit'
+import { promptAction } from '@kit.ArkUI'
 
 @Builder
 export function CartViewBuilder() {
@@ -116,9 +117,12 @@ export struct CartView {
               .transition({ type: TransitionType.Delete, opacity: 0 })
               .swipeAction({
                 end: this.DeleteBuilder(async () => {
-                  AlertDialog.show({
-                    message: 'clickDel'
-                  })
+                  this.dialog.open()
+                  await cart.delete({ids:[cartModel.skuId]})
+                  promptAction.showToast({message:'删除成功'})
+                  this.cartList.splice(index,1)
+                  await cart.count()
+                  this.dialog.close()
                 })
               })
             }, (cart: CartGoods) => cart.skuId)

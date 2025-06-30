@@ -15,6 +15,9 @@ interface UpdateParams {
   selected?: boolean
   count?: string
 }
+interface DelectParams {
+  ids:string[]
+}
 
 class Cart {
   CartKey: string = 'cartCount'
@@ -47,6 +50,10 @@ class Cart {
   async update(skuId: string, data: UpdateParams){
     return RequestAxios.put<CartGoods>(`/member/cart/${skuId}`, data)
   }
+  async delete(data: DelectParams){
+    return RequestAxios.delete<null>('/member/cart', data)
+  }
+
 }
 
 export const cart = new Cart()
