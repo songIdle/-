@@ -179,7 +179,6 @@ export struct GoodsView {
             specs: this.goods.specs,
             skus: this.goods.skus,
             onSkuChange: (sku: HmSku) => {
-              Logger.info(sku,'===std')
               this.sku = sku
             }
           })

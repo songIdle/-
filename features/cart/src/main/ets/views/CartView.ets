@@ -1,6 +1,7 @@
 import { auth, MkGuess, MkNavbar, MkUser, MKLoadingDialog, CartGoodsModel, CartGoods, MkEmpty,
   EmitterEvent,
-  cart} from 'basic'
+  cart,
+  Logger} from 'basic'
 import { emitter } from '@kit.BasicServicesKit'
 
 @Builder
@@ -15,6 +16,7 @@ export function CartViewBuilder() {
 
 @Component
 export struct CartView {
+  @StorageProp('safeBottom') safeBottom: number = 0
   @State isShowLeftIcon: boolean = false
   // 用户信息
   @StorageProp(auth.KEY) user: MkUser = {} as MkUser
@@ -34,8 +36,7 @@ export struct CartView {
   }
 
   async getData(){
-    if (!auth.getUser()
-      .token) {
+    if (!auth.getUser().token) {
       return
     }
     this.dialog.open()
@@ -81,17 +82,32 @@ export struct CartView {
         if (this.user.token) {
 
           if (this.cartList.length) {
-            ForEach(this.cartList, (cart: CartGoodsModel) => {
+            ForEach(this.cartList, (cartModel: CartGoodsModel,index:number) => {
               ListItem() {
                 CartItemComp({
-                  cart: cart,
-                  onChangeSelected: selected => {
+                  cart: cartModel,
+                  onChangeSelected:async  selected => {
                     // 更新数据
                     // 更新页面
+                    this.dialog.open()
+                    await cart.update(cartModel.skuId, { selected:selected })
+                    cartModel.selected=selected
+                    this.cartList.splice(index, 1, cartModel)
+                    await cart.count()
+                    this.dialog.close()
                   },
-                  onChangeCount: count => {
+                  onChangeCount:async  count => {
                     // 更新数据
                     // 更新页面
+                    this.dialog.open()
+                    // 更新后端数据count: count
+                    await cart.update(cartModel.skuId, { count:count.toString() })
+                    // 更新自己页面
+                    cartModel.count = count // !深层 => 浅层赋值/Observed ObjectLink
+                    this.cartList.splice(index, 1, cartModel)
+                    // 更新数量
+                    await cart.count()
+                    this.dialog.close()
                   }
                 })
               }
@@ -185,6 +201,7 @@ export struct CartView {
         this.getData()
       }
     })
+    .padding({ bottom: this.isShowLeftIcon?this.safeBottom:0 })
   }
 }
 
@@ -209,6 +226,10 @@ struct CartItemComp {
       Checkbox()
         .selectedColor($r('[basic].color.red'))
         .size({ width: 14, height: 14 })
+        .select(this.cart.selected)
+        .onChange(selected => {
+          this.onChangeSelected(selected)
+        })
       Image(this.cart.picture)
         .width(80)
         .height(80)
@@ -241,7 +262,17 @@ struct CartItemComp {
           Text(`¥${this.cart.price}`)
             .fontSize(14)
             .fontWeight(500)
-          Counter()
+          Counter(){
+            Text(this.cart.count.toString())
+          }
+          .enableInc(this.cart.count < this.cart.stock)
+          .enableDec(this.cart.count>1)
+          .onInc(async ()=>{
+            this.onChangeCount(this.cart.count + 1)
+          })
+          .onDec(async ()=>{
+            this.onChangeCount(this.cart.count - 1)
+          })
         }
         .width('100%')
         .justifyContent(FlexAlign.SpaceBetween)

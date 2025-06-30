@@ -11,7 +11,6 @@ export const axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.response.use((response: AxiosResponse) => {
-  console.info('===std',JSON.stringify(response.data),)
   return Promise.resolve(response)
 })
 
@@ -44,6 +43,7 @@ axiosInstance.interceptors.response.use((response: AxiosResponse) => {
   // 对响应数据做点什么
   return response;
 }, (error: AxiosError) => {
+  Logger.error(error,'===std')
   // 对响应错误做点什么
   if (error.response?.status === 401) {
     // 401 一般是 token 信息错误

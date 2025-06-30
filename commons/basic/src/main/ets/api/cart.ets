@@ -1,3 +1,4 @@
+import { Logger } from '../../../../Index'
 import { auth } from '../utils/Auth'
 import { RequestAxios } from '../utils/Request'
 import { CartGoods } from '../viewmodel'
@@ -8,6 +9,11 @@ interface AddParams {
 }
 interface CountResult {
   count: number
+}
+
+interface UpdateParams {
+  selected?: boolean
+  count?: string
 }
 
 class Cart {
@@ -35,6 +41,11 @@ class Cart {
   // 获取列表
   async list() {
     return RequestAxios.get<CartGoods[]>('/member/cart')
+  }
+
+  // 修改
+  async update(skuId: string, data: UpdateParams){
+    return RequestAxios.put<CartGoods>(`/member/cart/${skuId}`, data)
   }
 }
 
