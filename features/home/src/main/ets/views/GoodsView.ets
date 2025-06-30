@@ -214,6 +214,10 @@ export struct GoodsView {
         showRightIcon: true,
         customBuilder: () => {
           this.CustomTitleBuilder()
+        },
+        showLeftIcon:true,
+        leftClickHandler: () => {
+          this.pageStack.pop()
         }
       })
       Column() {
@@ -261,7 +265,7 @@ export struct GoodsView {
           Image($r('[basic].media.ic_public_cart'))
             .iconButton()
             .onClick(() => {
-
+              this.pageStack.pushPath({ name: 'CartView', param: true })
             })
         }
 

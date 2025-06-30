@@ -1,5 +1,6 @@
 import { auth } from '../utils/Auth'
 import { RequestAxios } from '../utils/Request'
+import { CartGoods } from '../viewmodel'
 
 interface AddParams {
   skuId: string
@@ -29,6 +30,11 @@ class Cart {
     }
     // 全局存储购物车数量
     AppStorage.setOrCreate(this.CartKey, count)
+  }
+
+  // 获取列表
+  async list() {
+    return RequestAxios.get<CartGoods[]>('/member/cart')
   }
 }
 

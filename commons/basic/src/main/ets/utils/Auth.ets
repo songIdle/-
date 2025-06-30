@@ -1,3 +1,5 @@
+import { cart } from "../api/cart"
+
 export interface MkUser {
   token: string
   nickname: string
@@ -19,11 +21,13 @@ class Auth {
   // 存信息
   saveUser(user: MkUser) {
     AppStorage.setOrCreate<MkUser>(this.KEY, user)
+    cart.count()
   }
 
   // 删信息
   removeUser() {
     AppStorage.setOrCreate<MkUser>(this.KEY, {} as MkUser)
+    cart.count()
   }
 }
 

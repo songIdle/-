@@ -1,9 +1,21 @@
 import { auth, MkGuess, MkNavbar, MkUser, MKLoadingDialog, CartGoodsModel, CartGoods, MkEmpty,
-  EmitterEvent } from 'basic'
+  EmitterEvent,
+  cart} from 'basic'
 import { emitter } from '@kit.BasicServicesKit'
+
+@Builder
+export function CartViewBuilder() {
+
+  NavDestination() {
+    CartView()
+  }
+  .hideTitleBar(true)
+}
+
 
 @Component
 export struct CartView {
+  @State isShowLeftIcon: boolean = false
   // 用户信息
   @StorageProp(auth.KEY) user: MkUser = {} as MkUser
   // 商品信息
@@ -17,7 +29,19 @@ export struct CartView {
   })
 
   aboutToAppear(): void {
+    const res = this.pageStack.getParamByName('CartView') as boolean[]
+    this.isShowLeftIcon = res.pop() ?? false
+  }
 
+  async getData(){
+    if (!auth.getUser()
+      .token) {
+      return
+    }
+    this.dialog.open()
+    const res = await cart.list()
+    this.cartList = res.data.result.map((item) => new CartGoodsModel(item))
+    this.dialog.close()
   }
 
   onCheckOrder() {
@@ -42,7 +66,13 @@ export struct CartView {
 
   build() {
     Column() {
-      MkNavbar({ title: '购物袋', showLeftIcon: false, showRightIcon: true })
+      MkNavbar({ title: '购物袋',
+        showLeftIcon: this.isShowLeftIcon,
+        leftClickHandler: () => {
+          this.pageStack.pop()
+        },
+        showRightIcon: true
+      })
         .border({
           width: { bottom: 0.5 },
           color: '#e4e4e4'
@@ -150,6 +180,11 @@ export struct CartView {
     .height('100%')
     .width('100%')
     .backgroundColor($r('[basic].color.under'))
+    .onVisibleAreaChange([0, 1], (isVisible) => {
+      if (isVisible) {
+        this.getData()
+      }
+    })
   }
 }
 
