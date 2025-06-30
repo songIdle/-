@@ -1,6 +1,6 @@
-import { auth, MkNavbar } from 'basic'
+import { auth, huaweiAuthPlugin, MkLoading, MKLoadingDialog, MkNavbar } from 'basic'
 import { promptAction } from '@kit.ArkUI'
-import { LoginApi } from '../api'
+import { huaweiLoginAPI, LoginApi } from '../api'
 
 @Builder
 function LoginViewBuilder() {
@@ -12,7 +12,12 @@ function LoginViewBuilder() {
 
 @Component
 export struct LoginView {
-  @State @Watch('onInput') account: string = 'songBoss'
+  dialog: CustomDialogController = new CustomDialogController({
+    builder: MKLoadingDialog({ message: '华为登录中' }),
+    customStyle: true,
+    alignment: DialogAlignment.Center
+  })
+  @State @Watch('onInput') account: string = 'zhousg'
   @State @Watch('onInput') password: string = '123456'
   @State valid: boolean = false
   @State agree: boolean = false
@@ -138,6 +143,25 @@ export struct LoginView {
 
           Row() {
             // 后续放置华为登录
+            // 后续放置华为登录
+            Image($r('app.media.ic_user_huawei'))
+              .width(40)
+              .onClick(async () => {
+                this.dialog.open()
+                // 等待完善
+                promptAction.showToast({ message: '华为登录中...' })
+                const code = await huaweiAuthPlugin.requestAuth()
+                if (code) {
+                  const res = await huaweiLoginAPI(code)
+                  auth.saveUser(res.data.result)
+                  this.pageStack.pop()
+                  promptAction.showToast({ message: '登录成功' })
+                } else {
+                  promptAction.showToast({ message: '登录异常' })
+                }
+                this.dialog.close()
+              })
+
           }
         }
         .margin({ top: 200 })

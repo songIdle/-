@@ -1,4 +1,5 @@
-import { auth, MkCell, MkCellGroup, MkNavbar, MkUser } from 'basic'
+import { auth, huaweiAuthPlugin, MkCell, MkCellGroup, MkNavbar, MkUser } from 'basic'
+import { promptAction } from '@kit.ArkUI'
 
 // import { MkCell, MkCellGroup } from 'basic'
 
@@ -83,9 +84,11 @@ export struct SettingsView {
                       defaultFocus: true,
                       style: DialogButtonStyle.HIGHLIGHT,
                       value: '确定',
-                      action: () => {
+                      action: async () => {
+                        await huaweiAuthPlugin.cancelAuth()
                         auth.removeUser()
                         this.pageStack.pop()
+                        promptAction.showToast({ message: '取消授权成功' })
                       }
                     },
                     cancel: () => {
