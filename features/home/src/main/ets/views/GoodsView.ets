@@ -1,5 +1,5 @@
-import { HmSku } from '@ohmos/sku'
-import { MkGoodsItem, MkGuess, MKLoadingDialog, MkNavbar } from 'basic'
+import { HmSku, Sku } from '@ohmos/sku'
+import { Logger, MkGoodsItem, MkGuess, MKLoadingDialog, MkNavbar } from 'basic'
 import { Goods } from '../viewmodel'
 import { window } from '@kit.ArkUI'
 import { getGoodsApi } from '../api'
@@ -79,7 +79,7 @@ export struct GoodsView {
   @Builder
   AddCartBuilder() {
     Column() {
-      Text('已选: ' + '')
+      Text('已选: ' + (this.sku.specsText||''))
         .fontWeight(300)
         .width('100%')
         .fontColor($r('[basic].color.black'))
@@ -88,7 +88,7 @@ export struct GoodsView {
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
       Row({ space: 10 }) {
-        Image(this.goods.mainPictures?.[0])
+        Image(this.sku.picture||this.goods.mainPictures?.[0])
           .alt($r('app.media.ic_sku_img'))
           .width(80)
           .height(80)
@@ -100,11 +100,11 @@ export struct GoodsView {
               .fontSize(14)
               .fontColor($r('[basic].color.black'))
               .offset({ y: -4 })
-            Text(this.goods.price)
+            Text(this.sku.price||this.goods.price)
               .fontSize(24)
               .fontColor($r('[basic].color.black'))
               .fontWeight(500)
-            Text('原价¥' + (this.goods.price))
+            Text('原价¥' + (this.sku.oldPrice||this.goods.price))
               .fontSize(12)
               .fontColor($r('[basic].color.gray'))
               .margin({ left: 10 })
@@ -118,8 +118,19 @@ export struct GoodsView {
 
           Row({ space: 10 }) {
             // 计数器
+            Counter() {
+              Text(this.count.toString())
+            }
+            .enableInc(this.count < (this.sku.inventory||this.goods.inventory)) // 加：小于库存还能加
+            .enableDec(this.count > 1) // 减：大于 1 还能减
+            .onInc(() => {
+              this.count++
+            })
+            .onDec(() => {
+              this.count--
+            })
 
-            Text(`库存充足`)
+            Text(`库存充足${this.sku.inventory||this.goods.inventory}`)
               .fontSize(12)
               .fontColor($r('[basic].color.gray'))
           }
@@ -138,13 +149,14 @@ export struct GoodsView {
       List() {
         ListItem() {
           // Sku 组件
-          //  MKSku({
-          //   specs: this.goods.specs,
-          //   skus: this.goods.skus,
-          //   onSkuChange: (sku: HmSku) => {
-          //     this.sku = sku
-          //   }
-          // })
+          Sku({
+            specs: this.goods.specs,
+            skus: this.goods.skus,
+            onSkuChange: (sku: HmSku) => {
+              Logger.info(sku,'===std')
+              this.sku = sku
+            }
+          })
         }
       }
       .layoutWeight(1)
