@@ -53,10 +53,16 @@ export struct CartView {
     this.dialog.close()
   }
 
+  // 点击去结算
   onCheckOrder() {
-    AlertDialog.show({
-      message: '去结算'
-    })
+    // 检查是否有选中商品
+    if (this.cartList.some(item => item.selected)) {
+      // 跳转结算页面
+      this.pageStack.pushPath({ name: 'CheckView' })
+    } else {
+      // 没选择商品，提示用户
+      promptAction.showToast({ message: '请选择要结算的商品' })
+    }
   }
 
   getCheckAll() {
@@ -136,7 +142,7 @@ export struct CartView {
                   this.dialog.close()
                 })
               })
-            }, (cart: CartGoods) => cart.skuId)
+            }, (cart: CartGoods,index:number) => cart.skuId+Date.now())
           } else {
             ListItem() {
               MkEmpty({
@@ -209,7 +215,7 @@ export struct CartView {
             .height(36)
             .backgroundColor($r('[basic].color.red'))
             .onClick(() => {
-
+              this.onCheckOrder()
             })
         }
         .height(50)
