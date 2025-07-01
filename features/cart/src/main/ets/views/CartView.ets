@@ -25,7 +25,6 @@ export struct CartView {
   @State cartList: CartGoodsModel[] = []
   // 页面栈
   @Consume pageStack: NavPathStack
-  @State isCheckAll:boolean=false
   // 自定义弹窗
   dialog = new CustomDialogController({
     builder: MKLoadingDialog(), // loading
@@ -37,6 +36,12 @@ export struct CartView {
     this.isShowLeftIcon = res.pop() ?? false
   }
 
+  totalCount() {
+    return this.cartList.filter(v => v.selected==true)
+      .reduce((sum, item) => sum + item.count * item.price, 0)
+      .toFixed(2) // 保留两位小数
+  }
+
   async getData(){
     if (!auth.getUser().token) {
       return
@@ -44,7 +49,6 @@ export struct CartView {
     this.dialog.open()
     const res = await cart.list()
     this.cartList = res.data.result.map((item) => new CartGoodsModel(item))
-    this.getCheckAll()
     this.dialog.close()
   }
 
@@ -55,7 +59,7 @@ export struct CartView {
   }
 
   getCheckAll() {
-    this.isCheckAll= this.cartList.every(v => v.selected)
+    return this.cartList.every(v => v.selected)
   }
 
   @Builder
@@ -99,7 +103,7 @@ export struct CartView {
                     this.dialog.open()
                     await cart.update(cartModel.skuId, { selected:selected })
                     cartModel.selected=selected
-                    this.getCheckAll()
+                    this.cartList.splice(index, 1, cartModel)
                     await cart.count()
                     this.dialog.close()
                   },
@@ -111,6 +115,7 @@ export struct CartView {
                     await cart.update(cartModel.skuId, { count:count.toString() })
                     // 更新自己页面
                     cartModel.count = count // !深层 => 浅层赋值/Observed ObjectLink
+                    this.cartList.splice(index, 1, cartModel)
                     // 更新数量
                     await cart.count()
                     this.dialog.close()
@@ -171,19 +176,17 @@ export struct CartView {
         Row() {
           Checkbox()
             .selectedColor($r('[basic].color.red'))
-            .select(this.isCheckAll)
+            .select(this.getCheckAll())
             .onClick(async () => {
               this.dialog.open()
-              this.getCheckAll()
-              const isCheckAllRes = this.isCheckAll
+              const isCheckAllRes =  this.getCheckAll()
               // 更新服务器的数据
               await cart.checkAll({ selected: !isCheckAllRes })
               // 更新本地数据
               this.cartList.forEach((item) => {
                 item.selected = !isCheckAllRes
               })
-              // this.cartList = this.cartList.slice() // 截取指定的数据到新数组中
-              this.getCheckAll()
+              this.cartList = this.cartList.slice() // 截取指定的数据到新数组中
               this.dialog.close()
             })
           Text('全选')
@@ -195,7 +198,7 @@ export struct CartView {
             .fontSize(14)
             .fontColor($r('[basic].color.black'))
             .margin({ right: 2 })
-          Text('998')
+          Text(this.totalCount())
             .fontSize(16)
             .fontWeight(500)
             .fontColor($r('[basic].color.red'))
