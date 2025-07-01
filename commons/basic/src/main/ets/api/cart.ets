@@ -18,6 +18,9 @@ interface UpdateParams {
 interface DelectParams {
   ids:string[]
 }
+interface CheckAllParams {
+  selected: boolean
+}
 
 class Cart {
   CartKey: string = 'cartCount'
@@ -52,6 +55,11 @@ class Cart {
   }
   async delete(data: DelectParams){
     return RequestAxios.delete<null>('/member/cart', data)
+  }
+
+  // 全选
+  checkAll(data: CheckAllParams) {
+    return RequestAxios.put<null>('/member/cart/selected', data)
   }
 
 }
