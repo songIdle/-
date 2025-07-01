@@ -1,36 +1,12 @@
 import { AddressItem, MkNavbar } from 'basic'
-import { getAddressApi } from '../api'
+import { delAddressAPI, getAddressApi, setDefaultAddressAPI } from '../api'
 
 @Builder
 function AddressManageViewBuilder() {
   AddressManageView()
 }
 
-@Builder
-function ActionBuilder(id: string) {
-  Row() {
-    Row() {
-      Text('设为默认')
-        .fontColor($r('[basic].color.white'))
-        .fontSize(11)
-        .padding({ left: 10, right: 10 })
-    }
-    .layoutWeight(1)
-    .height('100%')
-    .backgroundColor($r('[basic].color.black'))
 
-    Row() {
-      Text('删除')
-        .fontColor($r('[basic].color.white'))
-        .fontSize(11)
-        .padding({ left: 10, right: 10 })
-    }
-    .backgroundColor($r('[basic].color.red'))
-    .layoutWeight(1)
-    .height('100%')
-  }
-  .width(88)
-}
 
 @Component
 export struct AddressManageView {
@@ -47,8 +23,38 @@ export struct AddressManageView {
   aboutToAppear(): void {
     this.getAddressList()
   }
-
-
+  @Builder
+  ActionBuilder(id: string) {
+  Row() {
+    Row() {
+      Text('设为默认')
+        .fontColor($r('[basic].color.white'))
+        .fontSize(11)
+        .padding({ left: 10, right: 10 })
+    }
+    .layoutWeight(1)
+    .height('100%')
+    .backgroundColor($r('[basic].color.black'))
+    .onClick(async () => {
+      await setDefaultAddressAPI(id)
+      this.getAddressList()
+    })
+    Row() {
+      Text('删除')
+        .fontColor($r('[basic].color.white'))
+        .fontSize(11)
+        .padding({ left: 10, right: 10 })
+    }
+    .backgroundColor($r('[basic].color.red'))
+    .layoutWeight(1)
+    .height('100%')
+    .onClick(async ()=>{
+      await delAddressAPI(id)
+      this.getAddressList()
+    })
+  }
+  .width(88)
+}
 
   build() {
     NavDestination() {
@@ -118,7 +124,9 @@ export struct AddressManageView {
                     Row() {
                       Image($r("app.media.ic_public_edit"))
                         .width(16)
-                    }
+                    }.onClick(()=>{
+                      this.pageStack.pushPath({ name: 'AddressCreateView', param: item })
+                    })
                   }
                   .padding(16)
                   .width('100%')
@@ -126,6 +134,7 @@ export struct AddressManageView {
                   .backgroundColor($r('[basic].color.white'))
                 }
                 .margin({ bottom: 10 })
+                .swipeAction({end:this.ActionBuilder(item.id)})
               }
             )
           }
@@ -155,5 +164,8 @@ export struct AddressManageView {
       .padding({ bottom: this.safeBottom })
     }
     .hideTitleBar(true)
+    .onShown(() => {
+      this.getAddressList()
+    })
   }
 }
