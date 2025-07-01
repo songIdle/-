@@ -1,6 +1,7 @@
 import { AddressItem, Logger, MkNavbar } from 'basic';
 import { createAddressAPI, editAddressAPI, RequestType } from '../api';
-import { promptAction } from '@kit.ArkUI';
+import { KeyboardAvoidMode, promptAction } from '@kit.ArkUI';
+import { geoLocationManager } from '@kit.LocationKit';
 
 @Builder
 function AddressCreateViewBuilder() {
@@ -20,6 +21,7 @@ export struct AddressCreateView {
   }
   @State addressId:string=''
   aboutToAppear(): void {
+    this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE)
     const data = this.pageStack.getParamByName('AddressCreateView').pop() as AddressItem
     if (!!data) {
       // 表单回显
@@ -30,6 +32,10 @@ export struct AddressCreateView {
       // 保存地址id
       this.addressId = data.id
     }
+  }
+
+  aboutToDisappear(): void {
+    this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE)
   }
 
   // 点击保存提交表单，注意：最多只能添加 10 个收货地址
@@ -99,7 +105,32 @@ export struct AddressCreateView {
                 TextInput({ placeholder: '请填写详细地址' , text: $$this.addressData.address})
                   .fontSize(14)
                   .backgroundColor($r('[basic].color.white'))
-
+                  .layoutWeight(1)
+                LocationButton({
+                  icon: LocationIconStyle.LINES
+                })
+                  .backgroundColor(Color.White)
+                  .iconColor(Color.Blue)
+                  .onClick(async (event: ClickEvent, result: LocationButtonOnClickResult) => {
+                    if (result === LocationButtonOnClickResult.SUCCESS) {
+                      // 免去权限申请和权限请求等环节，获得临时授权，获取位置信息授权
+                      try {
+                        // 获取当前位置信息，请忽略警告提示，因为已通过安全控件临时授权
+                        const location = await geoLocationManager.getCurrentLocation()
+                        // 根据 location 位置信息解析出地理名称(真机，M 芯片的 Mac 才支持)
+                        const res = await geoLocationManager.getAddressesFromLocation(location)
+                        // 把定位的地址，显示到表单中
+                        this.addressData.address = res[0].placeName || ''
+                      } catch (error) {
+                        // 处理位置错误码，在控制中心开启定位功能
+                        if (error.code === 3301100) {
+                          promptAction.showToast({ message: '请开启定位开关~' })
+                        }
+                      }
+                    } else {
+                      promptAction.showToast({ message: '获取位置信息失败！' })
+                    }
+                  })
 
               }
               .listItemStyle()
