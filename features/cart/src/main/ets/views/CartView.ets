@@ -49,6 +49,7 @@ export struct CartView {
     this.dialog.open()
     const res = await cart.list()
     this.cartList = res.data.result.map((item) => new CartGoodsModel(item))
+    await cart.count()
     this.dialog.close()
   }
 

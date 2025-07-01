@@ -68,3 +68,15 @@ export class CartGoodsModel implements CartGoods {
     this.attrsText = model.attrsText
   }
 }
+
+export interface AddressItem {
+  address: string // 详细地址
+  contact: string // 联系电话
+  fullLocation: string
+  id: string
+  isDefault: 0 | 1 //是否默认 0默认
+  receiver: string // 收货人
+  provinceCode: number
+  cityCode: number
+  countyCode: number
+}

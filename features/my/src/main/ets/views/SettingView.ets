@@ -56,6 +56,9 @@ export struct SettingsView {
 
           MkCellGroup() {
             MkCell({ label: '收货地址管理' })
+              .onClick(() => {
+                  this.pageStack.pushPath({ name: 'AddressManageView' })
+              })
             MkCell({ label: '账号安全' })
             MkCell({ label: '消息设置' })
             MkCell({ label: '隐私设置' })

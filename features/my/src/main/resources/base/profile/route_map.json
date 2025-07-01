@@ -9,6 +9,16 @@
       "name": "SettingsView",
       "pageSourceFile": "src/main/ets/views/SettingView.ets",
       "buildFunction": "SettingsViewBuilder"
+    },
+    {
+      "name": "AddressManageView",
+      "pageSourceFile": "src/main/ets/views/AddressManageView.ets",
+      "buildFunction": "AddressManageViewBuilder"
+    },
+    {
+      "name": "AddressCreateView",
+      "pageSourceFile": "src/main/ets/views/AddressCreateView.ets",
+      "buildFunction": "AddressCreateViewBuilder"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { RequestAxios, MkUser } from 'basic'
+import { RequestAxios, MkUser, AddressItem } from 'basic'
 
 interface LoginData {
   account: string
@@ -26,4 +26,9 @@ export const huaweiLoginAPI = (code: string) => {
     code
   }
   return RequestAxios.post<MkUser>('/login/huawei', data)
+}
+
+// 获取地址
+export const getAddressApi = () => {
+  return RequestAxios.get<AddressItem[]>('/member/address')
 }
