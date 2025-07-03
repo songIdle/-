@@ -114,35 +114,35 @@ export struct MyView {
                 GridCol() {
                   NavComp({ icon: $r('app.media.ic_user_order'), text: '全部订单' })
                     .onClick(() => {
-                      // TODO 订单页，无参数
+                      this.pageStack.pushPath({ name: 'OrderView', param: 0 })
                     })
                 }
 
                 GridCol() {
                   NavComp({ icon: $r('app.media.ic_user_obligation'), text: '待付款' })
                     .onClick(() => {
-                      // TODO 订单页，无参数 orderState=1
+                      this.pageStack.pushPath({ name: 'OrderView', param: 1 })
                     })
                 }
 
                 GridCol() {
                   NavComp({ icon: $r('app.media.ic_user_unreceived'), text: '待发货' })
                     .onClick(() => {
-                      // TODO 订单页，无参数 orderState=2
+                      this.pageStack.pushPath({ name: 'OrderView', param: 2 })
                     })
                 }
 
                 GridCol() {
                   NavComp({ icon: $r('app.media.ic_user_unshipped'), text: '待收货' })
                     .onClick(() => {
-                      // TODO 订单页，无参数 orderState=3
+                      this.pageStack.pushPath({ name: 'OrderView', param: 3 })
                     })
                 }
 
                 GridCol() {
                   NavComp({ icon: $r('app.media.ic_user_unevaluated'), text: '待评价' })
                     .onClick(() => {
-                      // TODO 订单页，无参数 orderState=4
+                      this.pageStack.pushPath({ name: 'OrderView', param: 4 })
                     })
                 }
               }

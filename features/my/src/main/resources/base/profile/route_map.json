@@ -19,6 +19,11 @@
       "name": "AddressCreateView",
       "pageSourceFile": "src/main/ets/views/AddressCreateView.ets",
       "buildFunction": "AddressCreateViewBuilder"
+    },
+    {
+      "name": "OrderView",
+      "pageSourceFile": "src/main/ets/views/OrderView.ets",
+      "buildFunction": "OrderViewBuilder"
     }
   ]
 }
