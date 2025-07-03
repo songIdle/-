@@ -1,7 +1,7 @@
-import { MkCell, MkNavbar } from 'basic'
-import { AddressItem, OrderGoodsItem, Summary } from '../viewmodel'
+import { cart, Logger, MkCell, MkNavbar } from 'basic'
+import { AddressItem, CreateOrderParamsGoods, OrderGoodsItem, Summary } from '../viewmodel'
 import { promptAction } from '@kit.ArkUI'
-import { getOrderPreApi } from '../api'
+import { createOrderApi, getOrderPreApi } from '../api'
 
 @Builder
 function CheckViewBuilder() {
@@ -10,6 +10,7 @@ function CheckViewBuilder() {
 
 @Component
 export struct CheckView {
+  @Consume pageStack: NavPathStack
   @StorageProp('safeBottom') safeBottom: number = 0
   // 商品列表
   @State goodsList: OrderGoodsItem[] = []
@@ -48,6 +49,25 @@ export struct CheckView {
       return promptAction.showToast({ message: '未选择收货地址' })
     }
     this.loading = true
+
+    // 准备创建订单所需的 goods 参数
+    const goods = this.goodsList.map<CreateOrderParamsGoods>(item => {
+      return { skuId: item.skuId, count: item.count }
+    })
+    // 发送创建订单的请求
+    const res = await createOrderApi({
+      goods: goods, // 注意 goods 参数
+      addressId: this.addressId, // 收货地址id
+      deliveryTimeType: 1,
+      buyerMessage: '',
+      payType: 1,
+      payChannel: this.payChannel // 支付渠道
+    })
+    Logger.info(res.data.result) // 订单创建成功后，检查订单 id
+    this.loading = false // 修改状态
+    this.showPaySheet = false // 隐藏弹框
+    cart.count() // 更新购物车数量
+    this.pageStack.pushPath({name:'PayView',param:res.data.result.id})
   }
 
   @Builder
@@ -144,6 +164,9 @@ export struct CheckView {
           ListItem() {
             ChangeAddressComp({
               addressList: this.addressList, onChangeAddress: (addr) => {
+                if (addr==null){
+                  return
+                }
                 this.addressId = addr.id
               }
             })
@@ -261,13 +284,18 @@ export struct CheckView {
 
 @Component
 struct ChangeAddressComp {
-  @Prop @Watch('onAddressListChange') addressList: AddressItem[] = []
+  @Prop
+  @Watch('onAddressListChange')
+  addressList: AddressItem[] = []
   @State currentAddress: AddressItem = {} as AddressItem
   onChangeAddress: (address: AddressItem) => void = () => {
 
   }
 
   onAddressListChange() {
+    if (this.addressList==null) {
+      return
+    }
     const defAddress = this.addressList.find(addr => addr.isDefault === 0)
     if (defAddress) {
       this.currentAddress = defAddress

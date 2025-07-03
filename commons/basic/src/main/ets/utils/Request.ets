@@ -39,7 +39,6 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 // 添加响应拦截器 response.use
 axiosInstance.interceptors.response.use((response: AxiosResponse) => {
-  Logger.info(response)
   // 对响应数据做点什么
   return response;
 }, (error: AxiosError) => {

@@ -1,4 +1,4 @@
-import { auth, huaweiAuthPlugin, MkLoading, MKLoadingDialog, MkNavbar } from 'basic'
+import { auth, huaweiAuthPlugin, Logger, MkLoading, MKLoadingDialog, MkNavbar } from 'basic'
 import { promptAction } from '@kit.ArkUI'
 import { huaweiLoginAPI, LoginApi } from '../api'
 
@@ -152,6 +152,7 @@ export struct LoginView {
                 promptAction.showToast({ message: '华为登录中...' })
                 const code = await huaweiAuthPlugin.requestAuth()
                 if (code) {
+                  Logger.info(code,'std===')
                   const res = await huaweiLoginAPI(code)
                   auth.saveUser(res.data.result)
                   this.pageStack.pop()
