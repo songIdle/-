@@ -1,4 +1,4 @@
-import { MkEmpty, MkNavbar, MKLoadingDialog, MKPullToRefresh, MkTabs } from 'basic'
+import { MkEmpty, MkNavbar, MKLoadingDialog, MKPullToRefresh, MkTabs, Logger } from 'basic'
 import { OrderItem, OrderSku } from '../viewmodel'
 import { promptAction } from '@kit.ArkUI'
 import { getOrderApi } from '../api'
@@ -36,6 +36,10 @@ export struct OrderView {
   // 获取订单列表数据
   async getData() {
     this.dialog.open()
+    // 清空数组
+    this.list = []
+    // 重置页码
+    this.page = 1
     const res = await getOrderApi({
       pageSize: 5, // 页容量
       page: this.page, // 页码
@@ -43,9 +47,30 @@ export struct OrderView {
     })
     // 保存列表数据
     this.list = res.data.result.items
+    // 保存总页数
+    this.totalPage = res.data.result.pages
     this.isEmpty=this.list.length==0?true:false
     this.dialog.close()
   }
+  // 滚动触底加载更多
+  async loadMore() {
+    // 判断是否还需要加载
+    if (this.page < this.totalPage) {
+      // 累加页码
+      this.page++
+      // 根据新的参数获取列表
+      const res = await getOrderApi({
+        pageSize: 5, // 页容量
+        page: this.page, // 页码
+        orderState: this.activeIndex // 订单分类
+      })
+      // 数组追加
+      this.list.push(...res.data.result.items)
+    } else {
+      promptAction.showToast({ message: '没有更多数据了～' })
+    }
+  }
+
 
   @Builder
   ListBuilder() {
@@ -98,7 +123,13 @@ export struct OrderView {
         .height(40)
 
         if (this.isEmpty) {
-          MkEmpty()
+          MkEmpty({
+            tip: '空空如也',
+            buttonText: '去逛逛',
+            onClickButton: () => {
+              this.pageStack.pop();
+            }
+          })
         }
         // 下拉组件 触底组件
         MKPullToRefresh({
@@ -130,7 +161,51 @@ struct OrderItemComp {
   @Prop order: OrderItem
   timer: number = 0
   @State countDown: string = ''
+  totalTime: number = 0
+  aboutToAppear(): void {
+    this.startCountDown()
+  }
 
+  aboutToDisappear(): void {
+    clearInterval(this.timer)
+  }
+
+  formatTime(time: number){
+    const hour=Math.floor(time/60/60).toString().padStart(2,'0')
+    const min=Math.floor((time%3600 )/60).toString().padStart(2,'0')
+    const sec=Math.floor(time%60).toString().padStart(2,'0')
+    return hour+':'+min+':'+sec
+  }
+  // 开始倒计时
+  startCountDown() {
+    // 获取倒计时秒数
+    this.totalTime = this.order.countdown
+    // 格式化秒数成 hh:mm:ss
+    this.countDown = this.formatTime(this.totalTime)
+    // 判断订单状态是否为待付款，且倒计时超时
+    if (this.order.orderState === 1 && this.totalTime === -1) {
+      // 修改订单状态为已取消
+      this.order.orderState = 6
+      return
+    }
+    // 判断订单状态是否为待付款，且倒计时未超时
+    if (this.order.orderState === 1 && this.totalTime > -1) {
+      // 开启定时器
+      this.timer = setInterval(() => {
+        // 秒数减少
+        this.totalTime--
+        // 格式化秒数成 hh:mm:ss
+        this.countDown = this.formatTime(this.totalTime)
+        // 判断是否倒计时结束
+        if (this.totalTime <= 0) {
+          // 停止定时器
+          clearInterval(this.timer)
+          // 修改订单状态为已取消
+          this.order.orderState = 6
+        }
+      }, 1000)
+    }
+  }
   @Builder
   StateBuilder() {
     if (this.order.orderState === 1) {
