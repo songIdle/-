@@ -1,4 +1,4 @@
-import { MkEmpty, MkNavbar, MKLoadingDialog, MKPullToRefresh, MkTabs, Logger } from 'basic'
+import { MkEmpty, MkNavbar, MKLoadingDialog, MKPullToRefresh, MkTabs, Logger, MKNavPathStack } from 'basic'
 import { OrderItem, OrderSku } from '../viewmodel'
 import { promptAction } from '@kit.ArkUI'
 import { getOrderApi } from '../api'
@@ -275,6 +275,7 @@ struct OrderItemComp {
         Button('查看物流')
           .whiteStyle()
           .onClick(() => {
+            MKNavPathStack.pushPath({name:'OrderLogisticsView',param:this.order.id})
           })
       }
       if ([1].includes(this.order.orderState)) {

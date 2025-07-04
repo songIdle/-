@@ -14,7 +14,8 @@
     "installationFree": false,
     "pages": "$profile:main_pages",
     "requestPermissions": [
-      {"name": "ohos.permission.INTERNET"}
+      {"name": "ohos.permission.INTERNET"},
+      {"name": "ohos.permission.LOCATION","reason":"$string:location_reason","usedScene": {}}
     ],
     "metadata": [ // 配置信息如下
       {
