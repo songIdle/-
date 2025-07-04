@@ -1,7 +1,8 @@
-import { cart, Logger, MkCell, MkNavbar } from 'basic'
+import { cart, Logger, MkCell, MkNavbar, MKNavPathStack } from 'basic'
 import { AddressItem, CreateOrderParamsGoods, OrderGoodsItem, Summary } from '../viewmodel'
 import { promptAction } from '@kit.ArkUI'
 import { createOrderApi, getOrderPreApi } from '../api'
+import { add } from '../../../../Index'
 
 @Builder
 function CheckViewBuilder() {
@@ -277,7 +278,12 @@ export struct CheckView {
       })
     }
     .hideTitleBar(true)
-
+    .onVisibleAreaChange([0,1],()=>{
+      const addItem=this.pageStack.getParamByName('CheckView').pop() as AddressItem
+      if (addItem) {
+        this.addressList = [addItem]
+      }
+    })
   }
 }
 
@@ -342,6 +348,9 @@ struct ChangeAddressComp {
       }
       .alignItems(HorizontalAlign.Start)
       .padding({ top: 10, bottom: 10 })
+      .onClick(()=>{
+        MKNavPathStack.pushPath({name:'AddressManageView'})
+      })
     } else {
       Text('请填写收货地址')
         .fontSize(14)

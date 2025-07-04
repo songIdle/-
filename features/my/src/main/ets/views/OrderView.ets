@@ -1,6 +1,7 @@
 import { MkEmpty, MkNavbar, MKLoadingDialog, MKPullToRefresh, MkTabs } from 'basic'
 import { OrderItem, OrderSku } from '../viewmodel'
 import { promptAction } from '@kit.ArkUI'
+import { getOrderApi } from '../api'
 
 
 @Builder
@@ -27,6 +28,24 @@ export struct OrderView {
     maskColor: '22000000',
     autoCancel: false
   })
+  aboutToAppear(): void {
+    this.activeIndex = this.pageStack.getParamByName('OrderView').pop() as number
+    this.getData()
+  }
+
+  // 获取订单列表数据
+  async getData() {
+    this.dialog.open()
+    const res = await getOrderApi({
+      pageSize: 5, // 页容量
+      page: this.page, // 页码
+      orderState: this.activeIndex // 订单分类
+    })
+    // 保存列表数据
+    this.list = res.data.result.items
+    this.isEmpty=this.list.length==0?true:false
+    this.dialog.close()
+  }
 
   @Builder
   ListBuilder() {
@@ -71,6 +90,8 @@ export struct OrderView {
               // promptAction.showToast({
               //   message: `index:${index},item${JSON.stringify(_item)}`
               // })
+              this.activeIndex = index
+              this.getData()
             }
           })
         }

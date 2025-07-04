@@ -135,6 +135,9 @@ export struct AddressManageView {
                 }
                 .margin({ bottom: 10 })
                 .swipeAction({end:this.ActionBuilder(item.id)})
+                .onClick(() => {
+                  this.pageStack.pushDestination({name:'CheckView',param:item},{launchMode:LaunchMode.POP_TO_SINGLETON})
+                })
               }
             )
           }

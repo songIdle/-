@@ -46,8 +46,8 @@ export struct MkTabs {
       .animation({ duration: 300 })
       .onClick((e) => {
         if (this.activeIndex !== index) {
-          this.activeIndex = index // 父组件传来的数据 不能直接修改(只在子组件有效果 不会同步到父组件)
-          this.onTabChange?.(tab, index)
+           // 父组件传来的数据 不能直接修改(只在子组件有效果 不会同步到父组件)
+          this.onTabChange && this.onTabChange?.(tab, index)
         }
       })// 监听组件的显示位置变化
       .onAreaChange((oldValue: Area, newValue: Area) => {

@@ -1,4 +1,5 @@
 import { RequestAxios, MkUser, AddressItem } from 'basic'
+import { GetOrderParams, GetOrderResult } from '../viewmodel'
 
 interface LoginData {
   account: string
@@ -59,4 +60,9 @@ export const delAddressAPI = (id: string) => {
 // 修改地址
 export const editAddressAPI = (id: string, data: RequestType) => {
   return RequestAxios.put<null>(`/member/address/${id}`, data)
+}
+
+// 其他略
+export const getOrderApi = (params: GetOrderParams) => {
+  return RequestAxios.get<GetOrderResult>('/member/order', params)
 }
