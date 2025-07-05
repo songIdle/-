@@ -195,6 +195,9 @@ export struct GoodsView {
           })
         Button('立即购买')
           .buyButton($r('[basic].color.red'), false)
+          .onClick(()=>{
+
+          })
       }
       .width('100%')
     }
